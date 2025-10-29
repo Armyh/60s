@@ -1,0 +1,43 @@
+$:
+  vscode:
+    - docker:
+        image: docker.cnb.cool/uleo/docker:latest
+      services:
+        - vscode
+        - docker
+
+main:
+  "crontab: 00 20 * * *":
+    - name: 定时任务
+      stages: 
+        - name: 60s
+          image: docker.cnb.cool/uleo/docker:latest
+          script: |
+            python 60s.py latest
+            git add .
+            git commit -m "自动提交：$(date "+%Y-%m-%d %H:%M:%S")"
+            git push
+  push:
+    - services:
+        - docker
+      imports:
+        - https://cnb.cool/uleo/liapi/-/blob/main/github.yml
+      stages:
+        - name: 同步到GitHub
+          image: tencentcom/git-sync 
+          settings:
+            target_url: https://github.com/Armyh/60s.git
+            auth_type: https
+            username: ${GIT_USERNAME} 
+            password: ${GIT_ACCESS_TOKEN}
+            branch: main
+            git_user: ${GIT_USERNAME}
+            git_email: ${GIT_EMAIL}
+    - stages: #启动流水线
+        - name: build knowledge base #名字
+          image: cnbcool/knowledge-base #知识库插件
+          settings: #知识库设置
+            embedding_model: hunyuan #知识库使用的基础模型
+            include: "**/**.md" #知识库包含的文件类型
+            exclude: "" #可以添加排除文件
+            chunk_size: 3000 #分片大小

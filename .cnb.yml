@@ -1,7 +1,7 @@
 $:
   vscode:
     - docker:
-        image: docker.cnb.cool/uleo/docker:latest
+        image: docker.cnb.cool/ohao/learn/python:3.12.11
       services:
         - vscode
         - docker
@@ -11,7 +11,7 @@ main:
     - name: 定时任务
       stages: 
         - name: 60s
-          image: docker.cnb.cool/uleo/docker:latest
+          image: docker.cnb.cool/ohao/learn/python:3.12.11
           script: |
             python 60s.py latest
             git add .
